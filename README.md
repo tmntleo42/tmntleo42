@@ -1,123 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Green Space</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Space - 3D Version</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; background-color: black; color: white; overflow: hidden; }
-        canvas { display: block; background-color: darkgreen; margin: auto; }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <h1>Green Space - Escape the Planet</h1>
-    <canvas id="gameCanvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Set up basic scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        let player = { x: 100, y: 100, width: 40, height: 40, speed: 5 };
-        let bullets = [];
-        let enemies = [];
-        let level = 1;
-        let kills = 0;
+        // Add a basic floor
+        const geometry = new THREE.PlaneGeometry(500, 500);
+        const material = new THREE.MeshBasicMaterial({ color: 0x555555, side: THREE.DoubleSide });
+        const plane = new THREE.Mesh(geometry, material);
+        plane.rotation.x = - Math.PI / 2;
+        scene.add(plane);
 
-        function drawPlayer() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
+        // Create a simple astronaut model (cube for simplicity)
+        const astronautGeometry = new THREE.BoxGeometry(1, 2, 1);
+        const astronautMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        const astronaut = new THREE.Mesh(astronautGeometry, astronautMaterial);
+        astronaut.position.y = 1; // Keep it above the ground
+        scene.add(astronaut);
 
-        function shoot() {
-            bullets.push({ x: player.x + player.width, y: player.y + player.height / 2, width: 10, height: 5, speed: 7 });
-        }
+        // Create simple aliens (cylinder for simplicity)
+        const alienGeometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 8);
+        const alienMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const alien = new THREE.Mesh(alienGeometry, alienMaterial);
+        alien.position.set(5, 1, -5); // Position it in the scene
+        scene.add(alien);
 
-        function drawBullets() {
-            ctx.fillStyle = "red";
-            bullets.forEach((bullet, index) => {
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-                bullet.x += bullet.speed;
-                if (bullet.x > canvas.width) bullets.splice(index, 1);
-            });
-        }
+        // Set camera position
+        camera.position.z = 5;
 
-        function spawnEnemy() {
-            enemies.push({ x: canvas.width, y: Math.random() * canvas.height, width: 40, height: 40, speed: 1 + level * 0.5 });
-        }
+        // Handle player movement (WASD keys)
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 
-        function drawEnemies() {
-            ctx.fillStyle = "green";
-            enemies.forEach((enemy, index) => {
-                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-                enemy.x -= enemy.speed;
-                if (enemy.x + enemy.width < 0) enemies.splice(index, 1);
-            });
-        }
-
-        function checkCollisions() {
-            bullets.forEach((bullet, bIndex) => {
-                enemies.forEach((enemy, eIndex) => {
-                    if (
-                        bullet.x < enemy.x + enemy.width &&
-                        bullet.x + bullet.width > enemy.x &&
-                        bullet.y < enemy.y + enemy.height &&
-                        bullet.y + bullet.height > enemy.y
-                    ) {
-                        bullets.splice(bIndex, 1);
-                        enemies.splice(eIndex, 1);
-                        kills++;
-                        if (kills >= 7) {
-                            nextLevel();
-                        }
-                    }
-                });
-            });
-        }
-
-        function nextLevel() {
-            if (level < 25) {
-                level++;
-                kills = 0;
-                enemies = [];
-                clearInterval(spawnInterval);
-                spawnInterval = setInterval(spawnEnemy, Math.max(500, 2000 - level * 50));
-            } else {
-                endGame();
-            }
-        }
-
-        function endGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = "40px Arial";
-            ctx.fillText("You escaped the planet!", canvas.width / 2 - 200, canvas.height / 2);
-            ctx.fillText("Flying to Earth...", canvas.width / 2 - 150, canvas.height / 2 + 50);
-        }
-
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = "20px Arial";
-            ctx.fillText("Level: " + level, 20, 30);
-            drawPlayer();
-            drawBullets();
-            drawEnemies();
-            checkCollisions();
-            requestAnimationFrame(updateGame);
-        }
-
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowUp") player.y -= player.speed;
-            if (event.key === "ArrowDown") player.y += player.speed;
-            if (event.key === "ArrowLeft") player.x -= player.speed;
-            if (event.key === "ArrowRight") player.x += player.speed;
-            if (event.key === " ") shoot();
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'w') moveForward = true;
+            if (event.key === 's') moveBackward = true;
+            if (event.key === 'a') moveLeft = true;
+            if (event.key === 'd') moveRight = true;
         });
 
-        let spawnInterval = setInterval(spawnEnemy, 2000);
-        updateGame();
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'w') moveForward = false;
+            if (event.key === 's') moveBackward = false;
+            if (event.key === 'a') moveLeft = false;
+            if (event.key === 'd') moveRight = false;
+        });
+
+        // Update the game scene
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update astronaut position based on user input
+            if (moveForward) astronaut.position.z -= 0.1;
+            if (moveBackward) astronaut.position.z += 0.1;
+            if (moveLeft) astronaut.position.x -= 0.1;
+            if (moveRight) astronaut.position.x += 0.1;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
     </script>
 </body>
 </html>
+
 
 
 
