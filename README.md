@@ -1,66 +1,41 @@
-// Green Space: Escape the Planet
-// Basic FPS Game using Three.js
+# Green Space: Escape the Planet
 
-import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+## Overview
+Green Space: Escape the Planet is a retro FPS game inspired by Doom 2. You play as a space ranger fighting aliens with a ray gun across 10 levels. The first level takes place on a spaceship, and later levels transition to the planet's surface.
 
-let scene, camera, renderer, controls;
-let player, raygun, aliens = [];
+## Features
+- Classic Doom 2-style movement and graphics
+- A ray gun to battle alien enemies
+- 10 levels with increasing difficulty
+- Immersive spaceship and planetary environments
 
-init();
-animate();
+## Installation & Running the Game
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/YOUR_GITHUB_USERNAME/green-space.git
+   ```
+2. Navigate to the project folder:
+   ```sh
+   cd green-space
+   ```
+3. Open `index.html` in your browser, or start a local server:
+   ```sh
+   npx http-server
+   ```
 
-function init() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+## Controls
+- **WASD** - Move
+- **Mouse** - Look around
+- **Click** - Shoot
+- **Spacebar** - Jump
 
-    // Controls
-    controls = new PointerLockControls(camera, document.body);
-    document.addEventListener('click', () => controls.lock());
-    
-    // Player Setup
-    player = new THREE.Object3D();
-    player.position.set(0, 1.5, 0);
-    scene.add(player);
-    player.add(camera);
+## Contributing
+Feel free to contribute! Submit an issue or open a pull request with improvements.
 
-    // Light
-    const light = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(light);
+## Future Plans
+- Add more enemy types
+- Introduce power-ups
+- Multiplayer support
 
-    // Floor
-    const floorGeometry = new THREE.PlaneGeometry(50, 50);
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    scene.add(floor);
-
-    // Spawn Aliens
-    for (let i = 0; i < 5; i++) {
-        spawnAlien();
-    }
-}
-
-function spawnAlien() {
-    const geometry = new THREE.SphereGeometry(0.5, 16, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const alien = new THREE.Mesh(geometry, material);
-    alien.position.set(Math.random() * 20 - 10, 1, Math.random() * 20 - 10);
-    scene.add(alien);
-    aliens.push(alien);
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+---
+Created by [tmntleo42] 🚀 GARGOYLE Studios. EST 2024
