@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Green Space: Escape the Planet</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
     <script type="module">
         import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
         import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/controls/PointerLockControls.js';
@@ -15,8 +19,7 @@
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            // Use the existing canvas instead of creating a new renderer
+
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("gameCanvas") });
             renderer.setSize(window.innerWidth, window.innerHeight);
 
